@@ -1,7 +1,12 @@
+// script.js
+
+// Global Variables
 let currentPlayer = "X";
 let board = ["", "", "", "", "", "", "", "", ""];
 let gameActive = true;
 
+const cells = document.querySelectorAll(".cell"); // Cache the cells for better performance
+const messageElement = document.getElementById("message"); // Cache message element
 const winningCombinations = [
     [0, 1, 2],
     [3, 4, 5],
@@ -13,42 +18,57 @@ const winningCombinations = [
     [2, 4, 6]
 ];
 
+// Handle player move
 function makeMove(index) {
+    // Ignore moves on taken cells or if the game is not active
     if (!gameActive || board[index] !== "") return;
 
+    // Update the board and UI
     board[index] = currentPlayer;
-    document.querySelectorAll(".cell")[index].textContent = currentPlayer;
-    document.querySelectorAll(".cell")[index].classList.add("taken");
+    cells[index].textContent = currentPlayer;
+    cells[index].classList.add("taken");
 
+    // Check for win or draw
     if (checkWinner()) {
-        document.getElementById("message").textContent = `Player ${currentPlayer} Wins!`;
+        messageElement.textContent = `Player ${currentPlayer} Wins!`;
         gameActive = false;
         return;
     }
 
     if (board.every(cell => cell !== "")) {
-        document.getElementById("message").textContent = "It's a Draw!";
+        messageElement.textContent = "It's a Draw!";
         gameActive = false;
         return;
     }
 
+    // Switch turns
     currentPlayer = currentPlayer === "X" ? "O" : "X";
-    document.getElementById("message").textContent = `Player ${currentPlayer}'s Turn`;
+    messageElement.textContent = `Player ${currentPlayer}'s Turn`;
 }
 
+// Check if the current player has won
 function checkWinner() {
     return winningCombinations.some(combination => {
         return combination.every(index => board[index] === currentPlayer);
     });
 }
 
+// Reset the game state
 function resetGame() {
     board = ["", "", "", "", "", "", "", "", ""];
     gameActive = true;
     currentPlayer = "X";
-    document.querySelectorAll(".cell").forEach(cell => {
+
+    // Reset UI
+    cells.forEach(cell => {
         cell.textContent = "";
         cell.classList.remove("taken");
     });
-    document.getElementById("message").textContent = "Good Luck!";
+    messageElement.textContent = "Good Luck!";
 }
+
+// Add event listeners to cells and reset button
+cells.forEach((cell, index) => {
+    cell.addEventListener("click", () => makeMove(index));
+});
+document.getElementById("resetButton").addEventListener("click", resetGame);
