@@ -1,5 +1,3 @@
-// script.js
-
 // Global Variables
 let currentPlayer = "X";
 let board = ["", "", "", "", "", "", "", "", ""];
